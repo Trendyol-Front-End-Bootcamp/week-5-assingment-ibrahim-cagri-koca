@@ -1,17 +1,12 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CharacterCard from './CharacterCard';
 import Filter from './Filter.jsx';
 import Header from './Header';
+import axios from 'axios';
 import PageControlButtons from './PageControlButtons';
 
-const fetchAllCharacters = (callback, url) => {
-  fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-          if (data) {
-              callback(data);
-          }
-      }); 
+export const fetchAllCharacters = (callback, url) => {
+    axios.get(url).then(response => callback(response.data));
 }
 
 const CharacterFilter = () => {

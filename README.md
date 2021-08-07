@@ -2,7 +2,8 @@
 
 A single page application for Rick and Morty Characters
 
-![](rick.gif)
+![](src/assets/coverage.PNG)
+![](src/assets/rick.gif)
 
 # Getting Started with Create React App
 

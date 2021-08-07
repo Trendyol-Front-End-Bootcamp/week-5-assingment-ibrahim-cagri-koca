@@ -1,6 +1,6 @@
-import { capitalize, setGender, setName, setSpecies, setStatus, resetFilters, createFilterUrl } from '../components/Filter.jsx';
-import renderFilter from '../components/Filter.jsx';
-import { render } from "@testing-library/react";
+import  Filter, { capitalize, setGender, setName, setSpecies, setStatus, resetFilters, createFilterUrl } from '../components/Filter.jsx';
+import React from 'react';
+import { render, screen, fireEvent } from "@testing-library/react";
 
 describe("capitalize", () => {
   it("should return uppercase first letter", () => {    
@@ -85,13 +85,35 @@ describe("create filter url", () => {
             species: "human"
         }
         expect(createFilterUrl(filters)).toBe(expectedUrl);
-    })
+    });
 });
 
-describe("", () => {
-    it("should return html tags", () => {
-        const { filter } = render (<Filter/>);
-        expect(filter()).toBeTruthy();
-    })
+describe("testing html tags", () => {
+    let apiUrl = "";
+    const setApiUrl = (newUrl) => {apiUrl = newUrl;}
+    beforeEach(() => {
+        apiUrl = "";
+    });
+    it("should return main tags classname", () => {
+        const { container: {firstChild} } = render(<Filter setApiUrl={setApiUrl}/>);
+        expect(firstChild.className).toBe("filter-container");
+    });
+    it("should set apiUrl to have gender=male attribute", () => {
+        const { container: {firstChild} } = render(<Filter setApiUrl={setApiUrl}/>);
+        fireEvent.click(screen.getByTestId("gender-male"));
+        fireEvent.click(screen.getByTestId("button-test-1"));
+        expect(apiUrl).toBe("https://rickandmortyapi.com/api/character/?gender=male");
+    });
+    it("should setApiUrl to default one", () => {
+        render(<Filter setApiUrl={setApiUrl}/>);
+        fireEvent.click(screen.getByTestId("button-test-2"));
+        expect(apiUrl).toBe("https://rickandmortyapi.com/api/character");
+    });
+    it("should set apiUrl to  have name=Rick attribute", () => {
+        render(<Filter setApiUrl={setApiUrl}/>);
+        fireEvent.change(screen.getByTestId("filter-search-bar"), {target: {value: 'Rick'}});
+        fireEvent.click(screen.getByTestId("button-test-1"));
+        expect(apiUrl).toBe("https://rickandmortyapi.com/api/character/?name=Rick");
+    });
 })
 

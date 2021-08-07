@@ -1,51 +1,45 @@
 import { useHistory, useParams } from "react-router";
 import { useEffect, useState } from 'react';
 import Header from "./Header";
+import axios from "axios";
 
 const CharacterPage = () => {
     const history = useHistory();
-const backToHome = () => {
-    history.push("/")
-}
+    const backToHome = () => {
+        history.push("/")
+    }
 
-const {id} = useParams();
-const apiUrl = "https://rickandmortyapi.com/api/character/" + id;
-const fetchCharacter = (callback, url) => {
-    fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-            if (data) {
-                callback(data);
-            }
-        }); 
-  }
+    const {id} = useParams();
+    const apiUrl = "https://rickandmortyapi.com/api/character/" + id;
+    const fetchCharacter = (callback, url) => {
+        axios.get(url).then(response => callback(response.data)); 
+    }
 
-  const [character, setCharacter] = useState({});
-  const [episodes, setEpisodes] = useState([]);
+    const [character, setCharacter] = useState({});
+    const [episodes, setEpisodes] = useState([]);
   
-  useEffect(() => {
-    fetchCharacter((character) => {
-        setCharacter(character);
-    }, apiUrl)
-}, []);
+    useEffect(() => {
+        fetchCharacter((character) => {
+            setCharacter(character);
+        }, apiUrl)
+    }, []);
 
     useEffect (() => {
         if (character.episode) {
             let episodeNumbers = character.episode.slice(Math.max(character.episode.length - 5, 0))
                                                   .map(link => link.split('/').pop());
-            fetch("https://rickandmortyapi.com/api/episode/" + episodeNumbers.toString())
-            .then((response) => response.json())
-            .then((data) => {
-                if (data) {
-                    Array.isArray(data) ? setEpisodes(data) : setEpisodes([data])
+            axios.get("https://rickandmortyapi.com/api/episode/" + episodeNumbers.toString())           
+            .then((response) => {
+                if (response.data) {
+                    Array.isArray(response.data) ? setEpisodes(response.data) : setEpisodes([response.data])
                 }
             }); 
         }
     }, [character])
     return (
-         <div className="character-page-container">
-             <Header/>
-             <div className="character-page-details">
+        <div className="character-page-container">
+            <Header/>
+            <div className="character-page-details">
                 <img src={character.image} alt="character image" />
                 <div>
                     <h2>{character.name}</h2><hr />
@@ -55,8 +49,8 @@ const fetchCharacter = (callback, url) => {
                     <p>Last episodes: {episodes.map(episode => <p><strong>{episode.name}</strong></p> )}</p>
                     <button onClick={backToHome} >Go Back</button>
                 </div>
-             </div>
-         </div>
+            </div>
+        </div>
     )
 }
 
